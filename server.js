@@ -71,11 +71,11 @@ app.get('/movies', (req,res) =>{
 
 app.get('/movies/:id', (req,res) =>{
   try {
-    collection.findOne({ "id": request.params.id }, (error, result) => {
-      if(error) {
-          return response.status(500).send(error);
+    collection.findOne({ "id": req.params.id }, (err, result) => {
+      if(err) {
+          return res.status(500).send(err);
       }
-      response.send(result);
+      res.send(result);
     });
     } catch (e) {
       console.error(e);
@@ -85,8 +85,8 @@ app.get('/movies/:id', (req,res) =>{
 
 app.get('/movies/search', (req,res) =>{
   try {
-    var limit = request.query.limit;
-	  var metascore = request.query.metascore;
+    var limit = req.query.limit;
+	  var metascore = req.query.metascore;
   	if(limit==null) {
   		limit = 5;
   	}
@@ -97,11 +97,11 @@ app.get('/movies/search', (req,res) =>{
   	  	{$match: {metascore: {$gte: metascore}}},
     		{$limit: limit},
     		{$sort: {metascore: -1}}
-     	]).toArray((error, result) => {
-        if(error) {
-          return response.status(500).send(error);
+     	]).toArray((err, result) => {
+        if(err) {
+          return res.status(500).send(err);
         }
-        response.send(result);
+        res.send(result);
     });
     } catch (e) {
       console.error(e);
@@ -111,21 +111,21 @@ app.get('/movies/search', (req,res) =>{
 
 app.post('/movies/:id', (req,res) =>{
   try {
-    const date=request.body.date;
-	  const review=request.body.review;
+    const date=req.body.date;
+	  const review=req.body.review;
     collection.updateOne(
-		  { "id": request.params.id },
+		  { "id": req.params.id },
 		  {$addToSet:{
 		  	reviews: {
 			  	"date": date,
 			  	"review": review
 		  	}
-		  }},(error,result) => {
-		  	if(error) {
-		  		return response.status(500).send(error);
+		  }},(err,result) => {
+		  	if(err) {
+		  		return response.status(500).send(err);
 	  		}
 	  		var modify=result.result.nModified;
-	  		response.send({id:request.params.id, add:modify})
+	  		res.send({id:req.params.id, add:modify})
 	  });
     } catch (e) {
       console.error(e);
